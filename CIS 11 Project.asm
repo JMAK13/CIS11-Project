@@ -71,7 +71,7 @@ LEA R0, N7P			; Prompts the user for 7th number
 PUTS
 GETC				; Reads 1 char of user input then OUT displays it
 OUT
-STR R0, R1, #0			; Stores inputted character into array
+STR R1, R0, #0			; Stores inputted character into array
 ADD R1, R1, #1			; Increments array pointer
 AND R0, R0, #0			; Clear R0
 LD R0, NL			; Prints newline feed for next input prompt
@@ -81,13 +81,35 @@ LEA R0, N8P			; Prompts the user for 8th number
 PUTS
 GETC				; Reads 1 char of user input then OUT displays it
 OUT
-STR R0, R1, #0			; Stores inputted character into array
+STR R1, R0, #0			; Stores inputted character into array
 ADD R1, R1, #1			; Increments array pointer
 AND R0, R0, #0			; Clear R0
 LD R0, NL			; Prints newline feed for next input prompt
 OUT
 
+JSR PRNTARR
+
 HALT
+
+; Prints Array
+PRNTARR	STI R7, svReg7			; Saves place in program
+	LD R2, SIZE
+	ADD R1, R1, #-8			; Put array index back at 0
+	LOOP 	LDR R0, R1, #0		; Puts array value at first array index into R0
+		OUT			; Prints first value in array
+		LD R0, NL		; Load new line ASCII value into R0 and print it
+		OUT
+		ADD R1, R1, #1		; Increment array index pointer
+		ADD R2, R2, #-1		; Decrement loop counter
+	BRp LOOP
+	LDI R7, svReg7			; Loads original place in program to return to
+RET
+
+
+; Declare Variables
+svReg7	.FILL	x4200
+
+SIZE    .FILL 	#8
 
 N1P	.STRINGZ	"Enter number 1: "
 N2P	.STRINGZ	"Enter number 2: "
@@ -106,8 +128,8 @@ ASCII	.FILL		#48
 .END
 
 ; TODO List
-; Declare & Intialize Array to store input values
-; Create functions for reading in 3 digits max decimal values
-; Push value functions to array
-; Sort array
-; Output and pop array values
+; Declare & Intialize Array to store input values		DONE
+; Create functions for reading in 3 digits max decimal values	
+; Push value functions to array					DONE
+; Sort array							
+; Output and pop array values					
