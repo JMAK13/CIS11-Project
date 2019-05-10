@@ -1,17 +1,20 @@
 //Symbol Name		Page Address
 //----------------	------------
-//	ARRAY                   30E1
-//	ASCII                   30E3
-//	LOOP                    304E
-//	N1P                     3059
-//	N2P                     306A
-//	N3P                     307B
-//	N4P                     308C
-//	N5P                     309D
-//	N6P                     30AE
-//	N7P                     30BF
-//	N8P                     30D0
-//	NL                      30E2
-//	PRNTARR                 304B
-//	SIZE                    3058
-//	svReg7                  3057
+//	ARRAY                   30EF
+//	ASCII                   30F2
+//	ENTER                   30F1
+//	INPUT1                  3058
+//	LOOP                    304F
+//	LOOP2                   305E
+//	N1P                     3067
+//	N2P                     3078
+//	N3P                     3089
+//	N4P                     309A
+//	N5P                     30AB
+//	N6P                     30BC
+//	N7P                     30CD
+//	N8P                     30DE
+//	NL                      30F0
+//	PRNTARR                 304C
+//	SIZE                    3066
+//	svReg7                  3065

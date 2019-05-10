@@ -71,7 +71,7 @@ LEA R0, N7P			; Prompts the user for 7th number
 PUTS
 GETC				; Reads 1 char of user input then OUT displays it
 OUT
-STR R1, R0, #0			; Stores inputted character into array
+STR R0, R1, #0			; Stores inputted character into array
 ADD R1, R1, #1			; Increments array pointer
 AND R0, R0, #0			; Clear R0
 LD R0, NL			; Prints newline feed for next input prompt
@@ -81,13 +81,15 @@ LEA R0, N8P			; Prompts the user for 8th number
 PUTS
 GETC				; Reads 1 char of user input then OUT displays it
 OUT
-STR R1, R0, #0			; Stores inputted character into array
+STR R0, R1, #0			; Stores inputted character into array
 ADD R1, R1, #1			; Increments array pointer
 AND R0, R0, #0			; Clear R0
 LD R0, NL			; Prints newline feed for next input prompt
 OUT
 
 JSR PRNTARR
+
+JSR INPUT1
 
 HALT
 
@@ -104,6 +106,25 @@ PRNTARR	STI R7, svReg7			; Saves place in program
 	BRp LOOP
 	LDI R7, svReg7			; Loads original place in program to return to
 RET
+
+; Input Reading Function (Prototype)
+INPUT1
+	STI R7, svReg7			; Saves place in program
+	AND R4, R4, #0			; Clears R4
+	AND R5, R5, #0			; Clears R5
+	LD R3, ENTER			; Loads the ASCII code for the ENTER key into R3
+	NOT R3, R3			; Negates R3
+	ADD R3, R3, #1			; 2's compliment of the ASCII ENTER key
+	LOOP2 GETC			; Reads a char of input from user
+	OUT				; Displays inputted char
+	ADD R4, R0, #0			; Puts input value into R4
+	ADD R4, R4, R3			; Puts ASCII value of input into R4
+	BRp	LOOP2			; If not 0 they hit ENTER
+	LDI R7, svReg7			; Loads original place in program to return to
+RET
+	
+	
+	
 
 
 ; Declare Variables
@@ -123,6 +144,7 @@ N8P	.STRINGZ	"Enter number 8: "
 ARRAY	.FILL		x5000
 
 NL	.FILL		#10
+ENTER	.FILL		#13
 ASCII	.FILL		#48
 
 .END
@@ -131,5 +153,5 @@ ASCII	.FILL		#48
 ; Declare & Intialize Array to store input values		DONE
 ; Create functions for reading in 3 digits max decimal values	
 ; Push value functions to array					DONE
-; Sort array							
-; Output and pop array values					
+; Sort array										
+; Output and pop array values						
