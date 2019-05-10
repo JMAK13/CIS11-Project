@@ -1,5 +1,5 @@
 ; CIS 11 Project 1
-; Josh McIntyre
+; Josh McIntyre, Juan Castellon
 ; 05/09/2019
 ; Option A: Bubble Sort
 
@@ -37,3 +37,10 @@ ARRAY	.FILL		x4000
 SIZE	.FILL		#8
 
 .END
+
+; TODO List
+; Declare & Intialize Array to store input values
+; Create functions for reading in 3 digits max decimal values
+; Push value functions to array
+; Sort array
+; Output and pop array values
