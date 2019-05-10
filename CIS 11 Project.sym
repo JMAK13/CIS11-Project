@@ -1,12 +1,13 @@
 //Symbol Name		Page Address
 //----------------	------------
-//	ARRAY                   30A1
-//	N1P                     3011
-//	N2P                     3023
-//	N3P                     3035
-//	N4P                     3047
-//	N5P                     3059
-//	N6P                     306B
-//	N7P                     307D
-//	N8P                     308F
-//	SIZE                    30A2
+//	ARRAY                   30D2
+//	ASCII                   30D4
+//	N1P                     304A
+//	N2P                     305B
+//	N3P                     306C
+//	N4P                     307D
+//	N5P                     308E
+//	N6P                     309F
+//	N7P                     30B0
+//	N8P                     30C1
+//	NL                      30D3

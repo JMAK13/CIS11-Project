@@ -5,36 +5,103 @@
 
 ; Program starts at x3000
 .ORIG x3000
+LD R1, ARRAY			; Loads starting index array pointer into R1
+
 LEA R0, N1P			; Prompts the user for 1st number
 PUTS
+GETC				; Reads 1 char of user input then OUT displays it
+OUT
+STR R0, R1, #0			; Stores inputted character into array
+ADD R1, R1, #1			; Increments array pointer
+AND R0, R0, #0			; Clear R0
+LD R0, NL			; Prints newline feed for next input prompt
+OUT
+
 LEA R0, N2P			; Prompts the user for 2nd number
 PUTS
+GETC				; Reads 1 char of user input then OUT displays it
+OUT
+STR R0, R1, #0			; Stores inputted character into array
+ADD R1, R1, #1			; Increments array pointer
+AND R0, R0, #0			; Clear R0
+LD R0, NL			; Prints newline feed for next input prompt
+OUT
+
 LEA R0, N3P			; Prompts the user for 3rd number
 PUTS
+GETC				; Reads 1 char of user input then OUT displays it
+OUT
+STR R0, R1, #0			; Stores inputted character into array
+ADD R1, R1, #1			; Increments array pointer
+AND R0, R0, #0			; Clear R0
+LD R0, NL			; Prints newline feed for next input prompt
+OUT
+
 LEA R0, N4P			; Prompts the user for 4th number
 PUTS
-LEA R1, N5P			; Prompts the user for 5th number
+GETC				; Reads 1 char of user input then OUT displays it
+OUT
+STR R0, R1, #0			; Stores inputted character into array
+ADD R1, R1, #1			; Increments array pointer
+AND R0, R0, #0			; Clear R0
+LD R0, NL			; Prints newline feed for next input prompt
+OUT
+
+LEA R0, N5P			; Prompts the user for 5th number
 PUTS
-LEA R1, N6P			; Prompts the user for 6th number
+GETC				; Reads 1 char of user input then OUT displays it
+OUT
+STR R0, R1, #0			; Stores inputted character into array
+ADD R1, R1, #1			; Increments array pointer
+AND R0, R0, #0			; Clear R0
+LD R0, NL			; Prints newline feed for next input prompt
+OUT
+
+LEA R0, N6P			; Prompts the user for 6th number
 PUTS
+GETC				; Reads 1 char of user input then OUT displays it
+OUT
+STR R0, R1, #0			; Stores inputted character into array
+ADD R1, R1, #1			; Increments array pointer
+AND R0, R0, #0			; Clear R0
+LD R0, NL			; Prints newline feed for next input prompt
+OUT
+
 LEA R0, N7P			; Prompts the user for 7th number
 PUTS
+GETC				; Reads 1 char of user input then OUT displays it
+OUT
+STR R0, R1, #0			; Stores inputted character into array
+ADD R1, R1, #1			; Increments array pointer
+AND R0, R0, #0			; Clear R0
+LD R0, NL			; Prints newline feed for next input prompt
+OUT
+
 LEA R0, N8P			; Prompts the user for 8th number
 PUTS
+GETC				; Reads 1 char of user input then OUT displays it
+OUT
+STR R0, R1, #0			; Stores inputted character into array
+ADD R1, R1, #1			; Increments array pointer
+AND R0, R0, #0			; Clear R0
+LD R0, NL			; Prints newline feed for next input prompt
+OUT
 
 HALT
 
-N1P	.STRINGZ	"Enter number 1: \n"
-N2P	.STRINGZ	"Enter number 2: \n"
-N3P	.STRINGZ	"Enter number 3: \n"
-N4P	.STRINGZ	"Enter number 4: \n"
-N5P	.STRINGZ	"Enter number 5: \n"
-N6P	.STRINGZ	"Enter number 6: \n"
-N7P	.STRINGZ	"Enter number 7: \n"
-N8P	.STRINGZ	"Enter number 8: \n"
+N1P	.STRINGZ	"Enter number 1: "
+N2P	.STRINGZ	"Enter number 2: "
+N3P	.STRINGZ	"Enter number 3: "
+N4P	.STRINGZ	"Enter number 4: "
+N5P	.STRINGZ	"Enter number 5: "
+N6P	.STRINGZ	"Enter number 6: "
+N7P	.STRINGZ	"Enter number 7: "
+N8P	.STRINGZ	"Enter number 8: "
 
-ARRAY	.FILL		x4000
-SIZE	.FILL		#8
+ARRAY	.FILL		x5000
+
+NL	.FILL		#10
+ASCII	.FILL		#48
 
 .END
 
