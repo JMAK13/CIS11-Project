@@ -61,10 +61,6 @@ NUM3_V1		.FILL	x3923
 N3P		.STRINGZ	"Enter number 3: "
 NL3		.FILL	#10
 
-
-; ---------------------STOPS
-
-
 ; Prompt User for 4th Number
 ; and Store value in Array
 LEA R0, N4P			; Prompts the user for 4th number
@@ -84,7 +80,7 @@ NL4		.FILL	#10
 
 HALT
 
-
+; Number 1 Input Handling Function
 INPUT1
 	STI R1, svReg1			; Saves R1
 	STI R7, svReg7			; Saves place in program
@@ -93,36 +89,69 @@ INPUT1
 	LD R2, ASCII1
 	AND R4, R4, #0			; Clears R4
 	AND R5, R5, #0			; Clears R5
-	LD R3, ENTER1			; Loads the ASCII code for the ENTER key into R3
-	NOT R3, R3			; Negates R3
-	ADD R3, R3, #1			; 2's compliment of the ASCII ENTER key
 	LOOP2 GETC			; Reads a char of input from user
 	OUT				; Displays inputted char
+	ADD R4, R0, #-10		; Copy input into R4
+	BRz STOP			; If 0 they hit enter and it exits loop
 	NOT R2, R2
 	ADD R2, R2, #1
 	ADD R0, R0, R2
-	STR R0, R1, #0			; Stores digits into num1 array
+	STR R0, R1, #0			; Stores decimal value digits into num1 array
 	ADD R5, R5, #1			; Increment digit counter
 	ADD R1, R1, #1			; Increment number1array pointer
+	AND R2, R2, #0			; R2 = 0
+	LD R2, ASCII1			; R2 = 48(ASCII)
 	ADD R7, R5, #-3			; Checks if 3 digits have been inputted
-	BRz EXIT1
-	AND R2, R2, #0
-	LD R2, ASCII1
-	ADD R0, R0, R2
-	ADD R4, R0, #0			; Puts input value into R4
-	ADD R4, R4, R3			; Puts ASCII value of input into R4
-	BRp	LOOP2			; If positive they hit ENTER and exits loop
-	; handle if they only input 1 or 2
-	; digits and hit ENTER
-	ADD R7, R5, #-2			; Checks if 1 digit has been inputted	<-- account for ENTER
+	BRn LOOP2
+
+STOP	ADD R7, R5, #-1			; Checks if 1 digit has been inputted	<-- account for ENTER
 	BRz ENT1_1D
-	ADD R7, R5, #-3			; Checks if 2 digits have been inputted	<-- account for ENTER
+	ADD R7, R5, #-2			; Checks if 2 digits have been inputted	<-- account for ENTER
 	BRz ENT1_2D
+	ADD R7, R5, #-3			; Checks if 3 digits have been inputted	<-- account for ENTER
+	BRz ENT1_3D
 	LDI R7, svReg7			; Loads original place in program to return to
 	LDI R1, svReg1			; Loads original value of R1
 RET
-	
-EXIT1	AND R7, R7, #0			; R7 = 0	
+
+ENT1_1D	AND R7, R7, #0			; R7 = 0
+	AND R0, R0, #0			; R0 = 0
+	LD R7, NUM1_A
+	LDR R0, R7, #0			; Store number1 first digit in R0
+	STI R0, NUM1_V
+	STR R0, R7, #2			; Store value of R0 in number1 third digit
+	AND R0, R0, #0			; R0 = 0
+	STR R0, R7, #0			; Clear number1 first digit
+	STR R0, R7, #1			; Clear number1 second digit
+	LDI R7, svReg7			; Loads original place in program to return to
+	LDI R1, svReg1			; Loads original value of R1
+RET
+
+ENT1_2D AND R7, R7, #0			; R7 = 0
+	AND R0, R0, #0			; R0 = 0
+	AND R1, R1, #0			; R1 = 0
+	AND R2, R2, #0
+	ADD R2, R2, #9			; R2 = 9
+	LD R7, NUM1_A
+	LDR R0, R7, #0			; Store number1 first digit in R0
+	LDR R1, R7, #1			; Store number1 second digit in R1
+	ADD R3, R0, #0			; Copy first digit into R3
+
+	MULT ADD R3, R0, R3
+	ADD R2, R2, #-1
+	BRp MULT
+	ADD R3, R3, R1			; Add ones and tens place digits together
+
+	STI R3, NUM1_V
+	STR R1, R7, #2			; Store value of R3 in number1 second digit
+	STR R0, R7, #1			; Store value of R0 in number1 third digit
+	AND R0, R0, #0			; R0 = 0
+	STR R0, R7, #0			; Clear number1 first digit
+	LDI R7, svReg7			; Loads original place in program to return to
+	LDI R1, svReg1			; Loads original value of R1
+RET
+
+ENT1_3D	AND R7, R7, #0			; R7 = 0	
 	ADD R7, R7, #15
 	ADD R7, R7, #15
 	ADD R7, R7, #15
@@ -142,31 +171,13 @@ EXIT1	AND R7, R7, #0			; R7 = 0
 	LDI R1, svReg1			; Loads original value of R1
 RET
 
-ENT1_1D	AND R7, R7, #0			; R7 = 0
-	AND R0, R0, #0			; R0 = 0
-	LD R7, NUM1_A
-	LDR R0, R7, #0			; Store number1 first digit in R0
-	STI R0, NUM1_V
-	STR R0, R7, #2			; Store value of R0 in number1 third digit
-	AND R0, R0, #0			; R0 = 0
-	STR R0, R7, #0			; Clear number1 first digit
-	STR R0, R7, #1			; Clear number1 second digit
-	LDI R7, svReg7			; Loads original place in program to return to
-	LDI R1, svReg1			; Loads original value of R1
-RET
-
-ENT1_2D HALT
-
 ; Declare Variables
 svReg1		.FILL	x3200
 svReg7		.FILL	x3201
 NUM1_A		.FILL	x3900
 NUM1_V		.FILL	x3903
 ARRAY1		.FILL	x5000
-
-ENTER1		.FILL	#13
 ASCII1		.FILL	#48
-
 
 ; Input Reading Function for Number 2
 INPUT2
