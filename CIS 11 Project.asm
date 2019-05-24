@@ -11,7 +11,7 @@ LD R1, ARRAY1			; Loads starting index array pointer into R
 ; and Store value in Array
 LEA R0, N1P			; Prompts the user for 1st number
 PUTS
-JSR INPUT1			; Reads 3 char of user input then OUT displays it
+JSR INPUT1			; Call Input1 function
 LDI R0, NUM1_V			; Load number1's value into R0
 STR R0, R1, #0			; Stores inputted character into array
 ADD R1, R1, #1			; Increments array pointer
@@ -23,12 +23,14 @@ OUT
 N1P		.STRINGZ	"Enter number 1: "
 NL1		.FILL	#10
 
+
+
 ; Prompt User for 2nd Number
 ; and Store value in Array
 LEA R0, N2P			; Prompts the user for 2nd number
 PUTS
 JSR INPUT2			; Reads 3 char of user input then OUT displays it
-LDI R0, NUM2_V			; Load number2's value into R0
+LDI R0, NUM2_V1			; Load number2's value into R0
 STR R0, R1, #0			; Stores inputted character into array
 ADD R1, R1, #1			; Increments array pointer
 AND R0, R0, #0			; Clear R0
@@ -36,8 +38,11 @@ LD R0, NL2			; Prints newline feed for next input prompt
 OUT
 
 ; Declare Prompt 2
+NUM2_V1		.FILL	x3913
 N2P		.STRINGZ	"Enter number 2: "
 NL2		.FILL	#10
+
+
 
 ; Prompt User for 3rd Number
 ; and Store value in Array
@@ -52,12 +57,34 @@ LD R0, NL3			; Prints newline feed for next input prompt
 OUT
 
 ; Declare Prompt 3
-NUM3_V1		.FILL	x4923
+NUM3_V1		.FILL	x3923
 N3P		.STRINGZ	"Enter number 3: "
 NL3		.FILL	#10
 
 
-; Input Reading Function for Number 1
+; ---------------------STOPS
+
+
+; Prompt User for 4th Number
+; and Store value in Array
+LEA R0, N4P			; Prompts the user for 4th number
+PUTS
+JSR INPUT4			; Reads 3 char of user input then OUT displays it
+LDI R0, NUM4_V1			; Load number4's value into R0
+STR R0, R1, #0			; Stores inputted character into array
+ADD R1, R1, #1			; Increments array pointer
+AND R0, R0, #0			; Clear R0
+LD R0, NL4			; Prints newline feed for next input prompt
+OUT
+
+; Declare Prompt 4
+NUM4_V1		.FILL	x3933
+N4P		.STRINGZ	"Enter number 4: "
+NL4		.FILL	#10
+
+HALT
+
+
 INPUT1
 	STI R1, svReg1			; Saves R1
 	STI R7, svReg7			; Saves place in program
@@ -131,14 +158,15 @@ RET
 ENT1_2D HALT
 
 ; Declare Variables
-svReg1		.FILL	x4200
-svReg7		.FILL	x4201
-NUM1_A		.FILL	x4900
-NUM1_V		.FILL	x4903
+svReg1		.FILL	x3200
+svReg7		.FILL	x3201
+NUM1_A		.FILL	x3900
+NUM1_V		.FILL	x3903
 ARRAY1		.FILL	x5000
 
 ENTER1		.FILL	#13
 ASCII1		.FILL	#48
+
 
 ; Input Reading Function for Number 2
 INPUT2
@@ -214,10 +242,10 @@ RET
 ENT2_2D HALT
 
 ; Declare Variables
-svReg1_2	.FILL	x4202
-svReg7_2	.FILL	x4203
-NUM2_A		.FILL	x4910
-NUM2_V		.FILL	x4913
+svReg1_2	.FILL	x3202
+svReg7_2	.FILL	x3203
+NUM2_A		.FILL	x3910
+NUM2_V		.FILL	x3913
 ARRAY2		.FILL	x5000
 
 ENTER2		.FILL	#13
@@ -259,7 +287,7 @@ INPUT3
 	BRz ENT3_2D
 	LDI R7, svReg7_3		; Loads original place in program to return to
 	LDI R1, svReg1_3		; Loads original value of R1
-;RET
+RET
 	
 EXIT3	AND R7, R7, #0			; R7 = 0	
 	ADD R7, R7, #15
@@ -279,7 +307,7 @@ EXIT3	AND R7, R7, #0			; R7 = 0
 	STR R0, R7, #0			; Store number3 first digit as 1
 	LDI R7, svReg7_3		; Loads original place in program to return to
 	LDI R1, svReg1_3		; Loads original value of R1
-;RET
+RET
 
 ENT3_1D	AND R7, R7, #0			; R7 = 0
 	AND R0, R0, #0			; R0 = 0
@@ -292,40 +320,21 @@ ENT3_1D	AND R7, R7, #0			; R7 = 0
 	STR R0, R7, #1			; Clear number3 second digit
 	LDI R7, svReg7_3		; Loads original place in program to return to
 	LDI R1, svReg1_3		; Loads original value of R1
-;RET
+RET
 
 ENT3_2D HALT
 
 ; Declare Variables
-svReg1_3	.FILL	x4204
-svReg7_3	.FILL	x4205
-NUM3_A		.FILL	x4920
-NUM3_V		.FILL	x4923
+svReg1_3	.FILL	x3204
+svReg7_3	.FILL	x3205
+NUM3_A		.FILL	x3920
+NUM3_V		.FILL	x3923
 ARRAY3		.FILL	x5000
 
 ENTER3		.FILL	#13
 ASCII3		.FILL	#48
 
 ; ---- TESTING PLACEMENT ----
-
-; Prompt User for 4th Number
-; and Store value in Array
-LEA R0, N4P			; Prompts the user for 4th number
-PUTS
-JSR INPUT4			; Reads 3 char of user input then OUT displays it
-LDI R0, NUM4_V1			; Load number4's value into R0
-STR R0, R1, #0			; Stores inputted character into array
-ADD R1, R1, #1			; Increments array pointer
-AND R0, R0, #0			; Clear R0
-LD R0, NL4			; Prints newline feed for next input prompt
-OUT
-
-; Declare Prompt 4
-NUM4_V1		.FILL	x4933
-N4P		.STRINGZ	"Enter number 4: "
-NL4		.FILL	#10
-
-HALT
 
 ; Input Reading Function for Number 4
 INPUT4
@@ -401,10 +410,10 @@ RET
 ENT4_2D HALT
 
 ; Declare Variables
-svReg1_4	.FILL	x4206
-svReg7_4	.FILL	x4207
-NUM4_A		.FILL	x4930
-NUM4_V		.FILL	x4933
+svReg1_4	.FILL	x3206
+svReg7_4	.FILL	x3207
+NUM4_A		.FILL	x3930
+NUM4_V		.FILL	x3933
 ARRAY4		.FILL	x5000
 
 ENTER4		.FILL	#13
