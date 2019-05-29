@@ -78,6 +78,23 @@ NUM4_V1		.FILL	x3933
 N4P		.STRINGZ	"Enter number 4: "
 NL4		.FILL	#10
 
+; Prompt User for 5th Number
+; and Store value in Array
+LEA R0, N5P			; Prompts the user for 5th number
+PUTS
+JSR INPUT5			; Reads 3 char of user input then OUT displays it
+LDI R0, NUM5_V1			; Load number5's value into R0
+STR R0, R1, #0			; Stores inputted character into array
+ADD R1, R1, #1			; Increments array pointer
+AND R0, R0, #0			; Clear R0
+LD R0, NL5			; Prints newline feed for next input prompt
+OUT
+
+; Declare Prompt 5
+NUM5_V1		.FILL	x3943
+N5P		.STRINGZ	"Enter number 5: "
+NL5		.FILL	#10
+
 HALT
 
 ; Number 1 Input Handling Function
@@ -137,9 +154,9 @@ ENT1_2D AND R7, R7, #0			; R7 = 0
 	LDR R1, R7, #1			; Store number1 second digit in R1
 	ADD R3, R0, #0			; Copy first digit into R3
 
-	MULT ADD R3, R0, R3
+	MULT1 ADD R3, R0, R3
 	ADD R2, R2, #-1
-	BRp MULT
+	BRp MULT1
 	ADD R3, R3, R1			; Add ones and tens place digits together
 
 	STI R3, NUM1_V
@@ -179,45 +196,78 @@ NUM1_V		.FILL	x3903
 ARRAY1		.FILL	x5000
 ASCII1		.FILL	#48
 
-; Input Reading Function for Number 2
+; Number 2 Input Handling Function
 INPUT2
 	STI R1, svReg1_2		; Saves R1
 	STI R7, svReg7_2		; Saves place in program
-	LD R1, NUM2_A			; Loads number1array pointer into R1
+	LD R1, NUM2_A			; Loads number2array pointer into R1
 	AND R2, R2, #0			; Clears R2
 	LD R2, ASCII2
 	AND R4, R4, #0			; Clears R4
 	AND R5, R5, #0			; Clears R5
-	LD R3, ENTER2			; Loads the ASCII code for the ENTER key into R3
-	NOT R3, R3			; Negates R3
-	ADD R3, R3, #1			; 2's compliment of the ASCII ENTER key
 	LOOP3 GETC			; Reads a char of input from user
 	OUT				; Displays inputted char
+	ADD R4, R0, #-10		; Copy input into R4
+	BRz STOP2			; If 0 they hit enter and it exits loop
 	NOT R2, R2
 	ADD R2, R2, #1
 	ADD R0, R0, R2
-	STR R0, R1, #0			; Stores digits into num1 array
+	STR R0, R1, #0			; Stores decimal value digits into num2 array
 	ADD R5, R5, #1			; Increment digit counter
-	ADD R1, R1, #1			; Increment number1array pointer
+	ADD R1, R1, #1			; Increment number2array pointer
+	AND R2, R2, #0			; R2 = 0
+	LD R2, ASCII2			; R2 = 48(ASCII)
 	ADD R7, R5, #-3			; Checks if 3 digits have been inputted
-	BRz EXIT2
-	AND R2, R2, #0
-	LD R2, ASCII2
-	ADD R0, R0, R2
-	ADD R4, R0, #0			; Puts input value into R4
-	ADD R4, R4, R3			; Puts ASCII value of input into R4
-	BRp	LOOP3			; If positive they hit ENTER and exits loop
-	; handle if they only input 1 or 2
-	; digits and hit ENTER
-	ADD R7, R5, #-2			; Checks if 1 digit has been inputted	<-- account for ENTER
+	BRn LOOP3
+
+STOP2	ADD R7, R5, #-1			; Checks if 1 digit has been inputted	<-- account for ENTER
 	BRz ENT2_1D
-	ADD R7, R5, #-3			; Checks if 2 digits have been inputted	<-- account for ENTER
+	ADD R7, R5, #-2			; Checks if 2 digits have been inputted	<-- account for ENTER
 	BRz ENT2_2D
+	ADD R7, R5, #-3			; Checks if 3 digits have been inputted	<-- account for ENTER
+	BRz ENT2_3D
 	LDI R7, svReg7_2		; Loads original place in program to return to
 	LDI R1, svReg1_2		; Loads original value of R1
 RET
-	
-EXIT2	AND R7, R7, #0			; R7 = 0	
+
+ENT2_1D	AND R7, R7, #0			; R7 = 0
+	AND R0, R0, #0			; R0 = 0
+	LD R7, NUM2_A
+	LDR R0, R7, #0			; Store number2 first digit in R0
+	STI R0, NUM2_V
+	STR R0, R7, #2			; Store value of R0 in number1 third digit
+	AND R0, R0, #0			; R0 = 0
+	STR R0, R7, #0			; Clear number2 first digit
+	STR R0, R7, #1			; Clear number2 second digit
+	LDI R7, svReg7_2		; Loads original place in program to return to
+	LDI R1, svReg1_2		; Loads original value of R1
+RET
+
+ENT2_2D AND R7, R7, #0			; R7 = 0
+	AND R0, R0, #0			; R0 = 0
+	AND R1, R1, #0			; R1 = 0
+	AND R2, R2, #0
+	ADD R2, R2, #9			; R2 = 9
+	LD R7, NUM2_A
+	LDR R0, R7, #0			; Store number2 first digit in R0
+	LDR R1, R7, #1			; Store number2 second digit in R1
+	ADD R3, R0, #0			; Copy first digit into R3
+
+	MULT2 ADD R3, R0, R3
+	ADD R2, R2, #-1
+	BRp MULT2
+	ADD R3, R3, R1			; Add ones and tens place digits together
+
+	STI R3, NUM2_V
+	STR R1, R7, #2			; Store value of R3 in number2 second digit
+	STR R0, R7, #1			; Store value of R0 in number2 third digit
+	AND R0, R0, #0			; R0 = 0
+	STR R0, R7, #0			; Clear number2 first digit
+	LDI R7, svReg7_2		; Loads original place in program to return to
+	LDI R1, svReg1_2		; Loads original value of R1
+RET
+
+ENT2_3D	AND R7, R7, #0			; R7 = 0	
 	ADD R7, R7, #15
 	ADD R7, R7, #15
 	ADD R7, R7, #15
@@ -237,21 +287,6 @@ EXIT2	AND R7, R7, #0			; R7 = 0
 	LDI R1, svReg1_2		; Loads original value of R1
 RET
 
-ENT2_1D	AND R7, R7, #0			; R7 = 0
-	AND R0, R0, #0			; R0 = 0
-	LD R7, NUM2_A
-	LDR R0, R7, #0			; Store number2 first digit in R0
-	STI R0, NUM2_V
-	STR R0, R7, #2			; Store value of R0 in number1 third digit
-	AND R0, R0, #0			; R0 = 0
-	STR R0, R7, #0			; Clear number2 first digit
-	STR R0, R7, #1			; Clear number2 second digit
-	LDI R7, svReg7_2		; Loads original place in program to return to
-	LDI R1, svReg1_2		; Loads original value of R1
-RET
-
-ENT2_2D HALT
-
 ; Declare Variables
 svReg1_2	.FILL	x3202
 svReg7_2	.FILL	x3203
@@ -262,60 +297,36 @@ ARRAY2		.FILL	x5000
 ENTER2		.FILL	#13
 ASCII2		.FILL	#48
 
-; Input Reading Function for Number 3
+; Number 3 Input Handling Function
 INPUT3
 	STI R1, svReg1_3		; Saves R1
 	STI R7, svReg7_3		; Saves place in program
-	LD R1, NUM3_A			; Loads number1array pointer into R1
+	LD R1, NUM3_A			; Loads number3array pointer into R1
 	AND R2, R2, #0			; Clears R2
 	LD R2, ASCII3
 	AND R4, R4, #0			; Clears R4
 	AND R5, R5, #0			; Clears R5
-	LD R3, ENTER3			; Loads the ASCII code for the ENTER key into R3
-	NOT R3, R3			; Negates R3
-	ADD R3, R3, #1			; 2's compliment of the ASCII ENTER key
 	LOOP4 GETC			; Reads a char of input from user
 	OUT				; Displays inputted char
+	ADD R4, R0, #-10		; Copy input into R4
+	BRz STOP3			; If 0 they hit enter and it exits loop
 	NOT R2, R2
 	ADD R2, R2, #1
 	ADD R0, R0, R2
-	STR R0, R1, #0			; Stores digits into num1 array
+	STR R0, R1, #0			; Stores decimal value digits into num3 array
 	ADD R5, R5, #1			; Increment digit counter
-	ADD R1, R1, #1			; Increment number1array pointer
+	ADD R1, R1, #1			; Increment number3array pointer
+	AND R2, R2, #0			; R2 = 0
+	LD R2, ASCII3			; R2 = 48(ASCII)
 	ADD R7, R5, #-3			; Checks if 3 digits have been inputted
-	BRz EXIT3
-	AND R2, R2, #0
-	LD R2, ASCII3
-	ADD R0, R0, R2
-	ADD R4, R0, #0			; Puts input value into R4
-	ADD R4, R4, R3			; Puts ASCII value of input into R4
-	BRp	LOOP4			; If positive they hit ENTER and exits loop
-	; handle if they only input 1 or 2
-	; digits and hit ENTER
-	ADD R7, R5, #-2			; Checks if 1 digit has been inputted	<-- account for ENTER
+	BRn LOOP4
+
+STOP3	ADD R7, R5, #-1			; Checks if 1 digit has been inputted	<-- account for ENTER
 	BRz ENT3_1D
-	ADD R7, R5, #-3			; Checks if 2 digits have been inputted	<-- account for ENTER
+	ADD R7, R5, #-2			; Checks if 2 digits have been inputted	<-- account for ENTER
 	BRz ENT3_2D
-	LDI R7, svReg7_3		; Loads original place in program to return to
-	LDI R1, svReg1_3		; Loads original value of R1
-RET
-	
-EXIT3	AND R7, R7, #0			; R7 = 0	
-	ADD R7, R7, #15
-	ADD R7, R7, #15
-	ADD R7, R7, #15
-	ADD R7, R7, #15
-	ADD R7, R7, #15
-	ADD R7, R7, #15
-	ADD R7, R7, #10			; R7 = 100
-	STI R7, NUM3_V			; Store value of R7(100) into NUM3_V
-	AND R7, R7, #0
-	LD R7, NUM3_A			; R7 is number3array pointer
-	AND R0, R0, #0			; R0 = 0
-	STR R0, R7, #2			; Store number3 third digit as 0
-	STR R0, R7, #1			; Store number3 second digit as 0
-	ADD R0, R0, #1			; R0 = 1
-	STR R0, R7, #0			; Store number3 first digit as 1
+	ADD R7, R5, #-3			; Checks if 3 digits have been inputted	<-- account for ENTER
+	BRz ENT3_3D
 	LDI R7, svReg7_3		; Loads original place in program to return to
 	LDI R1, svReg1_3		; Loads original value of R1
 RET
@@ -333,7 +344,49 @@ ENT3_1D	AND R7, R7, #0			; R7 = 0
 	LDI R1, svReg1_3		; Loads original value of R1
 RET
 
-ENT3_2D HALT
+ENT3_2D AND R7, R7, #0			; R7 = 0
+	AND R0, R0, #0			; R0 = 0
+	AND R1, R1, #0			; R1 = 0
+	AND R2, R2, #0
+	ADD R2, R2, #9			; R2 = 9
+	LD R7, NUM3_A
+	LDR R0, R7, #0			; Store number3 first digit in R0
+	LDR R1, R7, #1			; Store number3 second digit in R1
+	ADD R3, R0, #0			; Copy first digit into R3
+
+	MULT3 ADD R3, R0, R3
+	ADD R2, R2, #-1
+	BRp MULT3
+	ADD R3, R3, R1			; Add ones and tens place digits together
+
+	STI R3, NUM3_V
+	STR R1, R7, #2			; Store value of R3 in number3 second digit
+	STR R0, R7, #1			; Store value of R0 in number3 third digit
+	AND R0, R0, #0			; R0 = 0
+	STR R0, R7, #0			; Clear number3 first digit
+	LDI R7, svReg7_3		; Loads original place in program to return to
+	LDI R1, svReg1_3		; Loads original value of R1
+RET
+
+ENT3_3D	AND R7, R7, #0			; R7 = 0	
+	ADD R7, R7, #15
+	ADD R7, R7, #15
+	ADD R7, R7, #15
+	ADD R7, R7, #15
+	ADD R7, R7, #15
+	ADD R7, R7, #15
+	ADD R7, R7, #10			; R7 = 100
+	STI R7, NUM3_V			; Store value of R7(100) into NUM1_V
+	AND R7, R7, #0
+	LD R7, NUM3_A			; R7 is number3array pointer
+	AND R0, R0, #0			; R0 = 0
+	STR R0, R7, #2			; Store number3 third digit as 0
+	STR R0, R7, #1			; Store number3 second digit as 0
+	ADD R0, R0, #1			; R0 = 1
+	STR R0, R7, #0			; Store number3 first digit as 1
+	LDI R7, svReg7_3		; Loads original place in program to return to
+	LDI R1, svReg1_3		; Loads original value of R1
+RET
 
 ; Declare Variables
 svReg1_3	.FILL	x3204
@@ -345,9 +398,7 @@ ARRAY3		.FILL	x5000
 ENTER3		.FILL	#13
 ASCII3		.FILL	#48
 
-; ---- TESTING PLACEMENT ----
-
-; Input Reading Function for Number 4
+; Number 4 Input Handling Function
 INPUT4
 	STI R1, svReg1_4		; Saves R1
 	STI R7, svReg7_4		; Saves place in program
@@ -356,51 +407,27 @@ INPUT4
 	LD R2, ASCII4
 	AND R4, R4, #0			; Clears R4
 	AND R5, R5, #0			; Clears R5
-	LD R3, ENTER4			; Loads the ASCII code for the ENTER key into R3
-	NOT R3, R3			; Negates R3
-	ADD R3, R3, #1			; 2's compliment of the ASCII ENTER key
 	LOOP5 GETC			; Reads a char of input from user
 	OUT				; Displays inputted char
+	ADD R4, R0, #-10		; Copy input into R4
+	BRz STOP4			; If 0 they hit enter and it exits loop
 	NOT R2, R2
 	ADD R2, R2, #1
 	ADD R0, R0, R2
-	STR R0, R1, #0			; Stores digits into num1 array
+	STR R0, R1, #0			; Stores decimal value digits into num4 array
 	ADD R5, R5, #1			; Increment digit counter
-	ADD R1, R1, #1			; Increment number1array pointer
+	ADD R1, R1, #1			; Increment number4array pointer
+	AND R2, R2, #0			; R2 = 0
+	LD R2, ASCII4			; R2 = 48(ASCII)
 	ADD R7, R5, #-3			; Checks if 3 digits have been inputted
-	BRz EXIT4
-	AND R2, R2, #0
-	LD R2, ASCII4
-	ADD R0, R0, R2
-	ADD R4, R0, #0			; Puts input value into R4
-	ADD R4, R4, R3			; Puts ASCII value of input into R4
-	BRp	LOOP5			; If positive they hit ENTER and exits loop
-	; handle if they only input 1 or 2
-	; digits and hit ENTER
-	ADD R7, R5, #-2			; Checks if 1 digit has been inputted	<-- account for ENTER
+	BRn LOOP5
+
+STOP4	ADD R7, R5, #-1			; Checks if 1 digit has been inputted	<-- account for ENTER
 	BRz ENT4_1D
-	ADD R7, R5, #-3			; Checks if 2 digits have been inputted	<-- account for ENTER
+	ADD R7, R5, #-2			; Checks if 2 digits have been inputted	<-- account for ENTER
 	BRz ENT4_2D
-	LDI R7, svReg7_4		; Loads original place in program to return to
-	LDI R1, svReg1_4		; Loads original value of R1
-RET
-	
-EXIT4	AND R7, R7, #0			; R7 = 0	
-	ADD R7, R7, #15
-	ADD R7, R7, #15
-	ADD R7, R7, #15
-	ADD R7, R7, #15
-	ADD R7, R7, #15
-	ADD R7, R7, #15
-	ADD R7, R7, #10			; R7 = 100
-	STI R7, NUM4_V			; Store value of R7(100) into NUM3_V
-	AND R7, R7, #0
-	LD R7, NUM4_A			; R7 is number4array pointer
-	AND R0, R0, #0			; R0 = 0
-	STR R0, R7, #2			; Store number4 third digit as 0
-	STR R0, R7, #1			; Store number4 second digit as 0
-	ADD R0, R0, #1			; R0 = 1
-	STR R0, R7, #0			; Store number4 first digit as 1
+	ADD R7, R5, #-3			; Checks if 3 digits have been inputted	<-- account for ENTER
+	BRz ENT4_3D
 	LDI R7, svReg7_4		; Loads original place in program to return to
 	LDI R1, svReg1_4		; Loads original value of R1
 RET
@@ -418,7 +445,49 @@ ENT4_1D	AND R7, R7, #0			; R7 = 0
 	LDI R1, svReg1_4		; Loads original value of R1
 RET
 
-ENT4_2D HALT
+ENT4_2D AND R7, R7, #0			; R7 = 0
+	AND R0, R0, #0			; R0 = 0
+	AND R1, R1, #0			; R1 = 0
+	AND R2, R2, #0
+	ADD R2, R2, #9			; R2 = 9
+	LD R7, NUM4_A
+	LDR R0, R7, #0			; Store number4 first digit in R0
+	LDR R1, R7, #1			; Store number4 second digit in R1
+	ADD R3, R0, #0			; Copy first digit into R3
+
+	MULT4 ADD R3, R0, R3
+	ADD R2, R2, #-1
+	BRp MULT4
+	ADD R3, R3, R1			; Add ones and tens place digits together
+
+	STI R3, NUM4_V
+	STR R1, R7, #2			; Store value of R3 in number4 second digit
+	STR R0, R7, #1			; Store value of R0 in number4 third digit
+	AND R0, R0, #0			; R0 = 0
+	STR R0, R7, #0			; Clear number4 first digit
+	LDI R7, svReg7_4		; Loads original place in program to return to
+	LDI R1, svReg1_4		; Loads original value of R1
+RET
+
+ENT4_3D	AND R7, R7, #0			; R7 = 0	
+	ADD R7, R7, #15
+	ADD R7, R7, #15
+	ADD R7, R7, #15
+	ADD R7, R7, #15
+	ADD R7, R7, #15
+	ADD R7, R7, #15
+	ADD R7, R7, #10			; R7 = 100
+	STI R7, NUM4_V			; Store value of R7(100) into NUM1_V
+	AND R7, R7, #0
+	LD R7, NUM4_A			; R7 is number4array pointer
+	AND R0, R0, #0			; R0 = 0
+	STR R0, R7, #2			; Store number4 third digit as 0
+	STR R0, R7, #1			; Store number4 second digit as 0
+	ADD R0, R0, #1			; R0 = 1
+	STR R0, R7, #0			; Store number4 first digit as 1
+	LDI R7, svReg7_4		; Loads original place in program to return to
+	LDI R1, svReg1_4		; Loads original value of R1
+RET
 
 ; Declare Variables
 svReg1_4	.FILL	x3206
@@ -430,59 +499,111 @@ ARRAY4		.FILL	x5000
 ENTER4		.FILL	#13
 ASCII4		.FILL	#48
 
-; --------- Unfinished Stuff ----------
+; Number 5 Input Handling Function
+INPUT5
+	STI R1, svReg1_5		; Saves R1
+	STI R7, svReg7_5		; Saves place in program
+	LD R1, NUM5_A			; Loads number5array pointer into R1
+	AND R2, R2, #0			; Clears R2
+	LD R2, ASCII5
+	AND R4, R4, #0			; Clears R4
+	AND R5, R5, #0			; Clears R5
+	LOOP6 GETC			; Reads a char of input from user
+	OUT				; Displays inputted char
+	ADD R4, R0, #-10		; Copy input into R4
+	BRz STOP5			; If 0 they hit enter and it exits loop
+	NOT R2, R2
+	ADD R2, R2, #1
+	ADD R0, R0, R2
+	STR R0, R1, #0			; Stores decimal value digits into num5 array
+	ADD R5, R5, #1			; Increment digit counter
+	ADD R1, R1, #1			; Increment number4array pointer
+	AND R2, R2, #0			; R2 = 0
+	LD R2, ASCII5			; R2 = 48(ASCII)
+	ADD R7, R5, #-3			; Checks if 3 digits have been inputted
+	BRn LOOP6
 
-; Prompt User for 5th Number
-; and Store value in Array
-LEA R0, N5P			; Prompts the user for 5th number
-PUTS
-GETC				; Reads 1 char of user input then OUT displays it
-OUT
-STR R0, R1, #0			; Stores inputted character into array
-ADD R1, R1, #1			; Increments array pointer
-AND R0, R0, #0			; Clear R0
-LD R0, NL			; Prints newline feed for next input prompt
-OUT
+STOP5	ADD R7, R5, #-1			; Checks if 1 digit has been inputted	<-- account for ENTER
+	BRz ENT5_1D
+	ADD R7, R5, #-2			; Checks if 2 digits have been inputted	<-- account for ENTER
+	BRz ENT5_2D
+	ADD R7, R5, #-3			; Checks if 3 digits have been inputted	<-- account for ENTER
+	BRz ENT5_3D
+	LDI R7, svReg7_5		; Loads original place in program to return to
+	LDI R1, svReg1_5		; Loads original value of R1
+RET
 
-; Prompt User for 6th Number
-; and Store value in Array
-LEA R0, N6P			; Prompts the user for 6th number
-PUTS
-GETC				; Reads 1 char of user input then OUT displays it
-OUT
-STR R0, R1, #0			; Stores inputted character into array
-ADD R1, R1, #1			; Increments array pointer
-AND R0, R0, #0			; Clear R0
-LD R0, NL			; Prints newline feed for next input prompt
-OUT
+ENT5_1D	AND R7, R7, #0			; R7 = 0
+	AND R0, R0, #0			; R0 = 0
+	LD R7, NUM5_A
+	LDR R0, R7, #0			; Store number5 first digit in R0
+	STI R0, NUM5_V
+	STR R0, R7, #2			; Store value of R0 in number1 third digit
+	AND R0, R0, #0			; R0 = 0
+	STR R0, R7, #0			; Clear number5 first digit
+	STR R0, R7, #1			; Clear number5 second digit
+	LDI R7, svReg7_5		; Loads original place in program to return to
+	LDI R1, svReg1_5		; Loads original value of R1
+RET
 
-; Prompt User for 7th Number
-; and Store value in Array
-LEA R0, N7P			; Prompts the user for 7th number
-PUTS
-GETC				; Reads 1 char of user input then OUT displays it
-OUT
-STR R0, R1, #0			; Stores inputted character into array
-ADD R1, R1, #1			; Increments array pointer
-AND R0, R0, #0			; Clear R0
-LD R0, NL			; Prints newline feed for next input prompt
-OUT
+ENT5_2D AND R7, R7, #0			; R7 = 0
+	AND R0, R0, #0			; R0 = 0
+	AND R1, R1, #0			; R1 = 0
+	AND R2, R2, #0
+	ADD R2, R2, #9			; R2 = 9
+	LD R7, NUM5_A
+	LDR R0, R7, #0			; Store number5 first digit in R0
+	LDR R1, R7, #1			; Store number5 second digit in R1
+	ADD R3, R0, #0			; Copy first digit into R3
 
-; Prompt User for 8th Number
-; and Store value in Array
-LEA R0, N8P			; Prompts the user for 8th number
-PUTS
-GETC				; Reads 1 char of user input then OUT displays it
-OUT
-STR R0, R1, #0			; Stores inputted character into array
-ADD R1, R1, #1			; Increments array pointer
-AND R0, R0, #0			; Clear R0
-LD R0, NL			; Prints newline feed for next input prompt
-OUT
+	MULT5 ADD R3, R0, R3
+	ADD R2, R2, #-1
+	BRp MULT5
+	ADD R3, R3, R1			; Add ones and tens place digits together
+
+	STI R3, NUM5_V
+	STR R1, R7, #2			; Store value of R3 in number5 second digit
+	STR R0, R7, #1			; Store value of R0 in number5 third digit
+	AND R0, R0, #0			; R0 = 0
+	STR R0, R7, #0			; Clear number5 first digit
+	LDI R7, svReg7_5		; Loads original place in program to return to
+	LDI R1, svReg1_5		; Loads original value of R1
+RET
+
+ENT5_3D	AND R7, R7, #0			; R7 = 0	
+	ADD R7, R7, #15
+	ADD R7, R7, #15
+	ADD R7, R7, #15
+	ADD R7, R7, #15
+	ADD R7, R7, #15
+	ADD R7, R7, #15
+	ADD R7, R7, #10			; R7 = 100
+	STI R7, NUM5_V			; Store value of R7(100) into NUM5_V
+	AND R7, R7, #0
+	LD R7, NUM5_A			; R7 is number5array pointer
+	AND R0, R0, #0			; R0 = 0
+	STR R0, R7, #2			; Store number5 third digit as 0
+	STR R0, R7, #1			; Store number5 second digit as 0
+	ADD R0, R0, #1			; R0 = 1
+	STR R0, R7, #0			; Store number5 first digit as 1
+	LDI R7, svReg7_5		; Loads original place in program to return to
+	LDI R1, svReg1_5		; Loads original value of R1
+RET
+
+; Declare Variables
+svReg1_5	.FILL	x3208
+svReg7_5	.FILL	x3209
+NUM5_A		.FILL	x3940
+NUM5_V		.FILL	x3943
+ARRAY5		.FILL	x5000
+
+ENTER5		.FILL	#13
+ASCII5		.FILL	#48
 
 
 
-; Prints Array
+
+; Print Array Function
 PRNTARR	STI R7, svReg7_X		; Saves place in program
 	LD R2, SIZE
 	ADD R1, R1, #-8			; Put array index back at 0
@@ -500,7 +621,6 @@ RET
 SIZE    .FILL 	#8
 svReg7_X	.FILL	x3111
 
-N5P	.STRINGZ	"Enter number 5: "
 N6P	.STRINGZ	"Enter number 6: "
 N7P	.STRINGZ	"Enter number 7: "
 N8P	.STRINGZ	"Enter number 8: "
