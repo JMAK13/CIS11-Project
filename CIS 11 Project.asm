@@ -195,6 +195,140 @@ NEWLINE	.FILL	#10
 UNARR	.STRINGZ	"\nThe Unsorted Array\n"
 
 
+; ----------- Bubble Sort -----------
+
+AND R4, R4, #0			; Clear R4
+ADD R4, R4, #1			; Outter loop counter
+
+; Outter Loop
+OLOOP AND R1, R1, #0
+LD R1, ARR9
+AND R7, R7, #0			; Clear R7
+ADD R7, R7, #-8			; R7 = -8 for loop condition -> i=8
+ADD R7, R4, R7
+BRzp BREAK1			; If outter loop is done
+
+ADD R4, R4, #1			; Increment outter loop counter
+AND R6, R6, #0			; Clear R6
+ADD R6, R6, #1			; R6 = 1
+
+; Inner Loop
+ILOOP AND R7, R7, #0		; Clear R7
+ADD R7, R7, #-8			; R7 = -8
+ADD R5, R6, R7			; NOTE -> results in a negative always unless done looping
+BRzp OLOOP			; Go to outter loop once inner loop is done
+NOT R5, R5
+ADD R5, R5, #1			; Negate R5 to make it positive -> j = n-i where n=8
+LDR R2, R1, #0			; First value
+LDR R3, R1, #1			; Second value
+NOT R0, R3
+ADD R0, R0, #1			; R0 = -R3
+ADD R0, R0, R2
+BRn SWAP			; Compare the values to possibly swap
+ADD R1, R1, #1
+ADD R6, R6, #1			; Increment inner loop counter
+BR ILOOP
+
+SWAP ADD R0, R3, #0		; Copy second value into R3
+STR R2, R1, #1			; Store first value in second value place
+STR R0, R1, #0			; Store copy of second value into place of first value
+; Swap Digits (use 0, 2, 5, and 7)
+AND R0, R0, #0
+AND R2, R2, #0
+AND R5, R5, #0
+AND R7, R7, #0
+LD R0, ARR90
+ADD R0, R0, R6
+ADD R0, R0, R6
+ADD R0, R0, R6
+ADD R0, R0, #-3
+LDR R1, R0, #0
+LDR R2, R0, #3
+ADD R7, R1, #0
+STR R2, R0, #0
+STR R7, R0, #3
+
+AND R0, R0, #0
+AND R2, R2, #0
+AND R5, R5, #0
+AND R7, R7, #0
+LD R0, ARR90
+ADD R0, R0, R6
+ADD R0, R0, R6
+ADD R0, R0, R6
+ADD R0, R0, #-3
+LDR R1, R0, #1
+LDR R2, R0, #4
+ADD R7, R1, #0
+STR R2, R0, #1
+STR R7, R0, #4
+
+AND R0, R0, #0
+AND R2, R2, #0
+AND R5, R5, #0
+AND R7, R7, #0
+LD R0, ARR90
+ADD R0, R0, R6
+ADD R0, R0, R6
+ADD R0, R0, R6
+ADD R0, R0, #-3
+LDR R1, R0, #2
+LDR R2, R0, #5
+ADD R7, R1, #0
+STR R2, R0, #2
+STR R7, R0, #5
+
+ADD R1, R1, #1			; Increment array pointer
+ADD R6, R6, #1			; Increment inner loop counter
+BR ILOOP
+
+; Declare variables
+ARR9 	.FILL x3999
+ARR90	.FILL x3980
+
+; ----------- DISPLAY SORTED ARRAY -----------
+BREAK1 AND R0, R0, #0			; Clear R0
+LEA R0, UNARR_1			; Load string
+PUTS				; Display string
+
+AND R1, R1, #0			; Clear R1
+AND R0, R0, #0			; Clear R0
+AND R2, R2, #0			; Clear R2
+AND R3, R3, #0			; Clear R3
+LD R3, ASCII0_1
+LD R2, COUNT1_1
+LD R1, DIGITS_1
+REPEAT_1 AND R0, R0, #0
+LDR R0, R1, #0
+ADD R0, R0, R3
+OUT
+ADD R1, R1, #1
+
+AND R0, R0, #0
+LDR R0, R1, #0
+ADD R0, R0, R3
+OUT
+ADD R1, R1, #1
+
+AND R0, R0, #0
+LDR R0, R1, #0
+ADD R0, R0, R3
+OUT
+ADD R1, R1, #1
+
+AND R0, R0, #0
+LD R0, NEWLINE_1
+OUT
+
+ADD R2, R2, #-1
+BRp REPEAT_1
+
+DIGITS_1	.FILL	x3980
+ASCII0_1	.FILL	#48
+COUNT1_1	.FILL	#8
+NEWLINE_1	.FILL	#10
+UNARR_1		.STRINGZ	"\nThe Sorted Array\n"
+
 HALT
 
 ; ----------- INPUT HANDLING -----------
@@ -1004,124 +1138,5 @@ ARRAY8		.FILL	x3999
 
 ENTER8		.FILL	#13
 ASCII8		.FILL	#48
-
-
-
-
-
-; Print Array Function
-PRNTARR	STI R7, svReg7_X		; Saves place in program
-	LD R2, SIZE
-	ADD R1, R1, #-8			; Put array index back at 0
-	LOOP 	LDR R0, R1, #0		; Puts array value at first array index into R0
-		OUT			; Prints first value in array
-		LD R0, NL		; Load new line ASCII value into R0 and print it
-		OUT
-		ADD R1, R1, #1		; Increment array index pointer
-		ADD R2, R2, #-1		; Decrement loop counter
-	BRp LOOP
-	LDI R7, svReg7_X		; Loads original place in program to return to
-RET
-
-; Declare Variables
-SIZE    .FILL 	#8
-svReg7_X	.FILL	x3111
-
-NL	.FILL		#10
-ENTER	.FILL		#13
-ASCII	.FILL		#48
-
-
-
-
-
-
-; Start of program
-LD R1, ARR9               	; Loading the array into R1
-
-; Putting values into the array for testing
-AND R0, R0, #0
-LD R0, N1
-STR R0, R1, #0
-
-AND R0, R0, #0
-LD R0, N2
-STR R0, R1, #1
-
-AND R0, R0, #0
-LD R0, N3
-STR R0, R1, #2
-
-AND R0, R0, #0
-LD R0, N4
-STR R0, R1, #3
-
-AND R0, R0, #0
-LD R0, N5
-STR R0, R1, #4
-
-AND R0, R0, #0
-LD R0, N6
-STR R0, R1, #5
-
-AND R0, R0, #0
-LD R0, N7
-STR R0, R1, #6
-
-AND R0, R0, #0
-LD R0, N8
-STR R0, R1, #7
-
-AND R4, R4, #0			; Clear R4
-ADD R4, R4, #1			; Outter loop counter
-
-; Outter Loop
-OLOOP AND R1, R1, #0
-LD R1, ARR9
-AND R7, R7, #0			; Clear R7
-ADD R7, R7, #-8			; R7 = -8 for loop condition -> i=8
-ADD R7, R4, R7
-BRzp BREAK1			; If outter loop is done
-
-ADD R4, R4, #1			; Increment outter loop counter
-AND R6, R6, #0			; Clear R6
-ADD R6, R6, #1			; R6 = 1
-
-; Inner Loop
-ILOOP AND R7, R7, #0		; Clear R7
-ADD R7, R7, #-8			; R7 = -8
-ADD R5, R6, R7			; NOTE -> results in a negative always unless done looping
-BRzp OLOOP			; Go to outter loop once inner loop is done
-NOT R5, R5
-ADD R5, R5, #1			; Negate R5 to make it positive -> j = n-i where n=8
-LDR R2, R1, #0			; First value
-LDR R3, R1, #1			; Second value
-NOT R0, R3
-ADD R0, R0, #1			; R0 = -R3
-ADD R0, R0, R2
-BRn SWAP			; Compare the values to possibly swap
-ADD R1, R1, #1
-ADD R6, R6, #1			; Increment inner loop counter
-BR ILOOP
-
-SWAP ADD R0, R3, #0		; Copy second value into R3
-STR R2, R1, #1			; Store first value in second value place
-STR R0, R1, #0			; Store copy of second value into place of first value
-ADD R1, R1, #1			; Increment array pointer
-ADD R6, R6, #1			; Increment inner loop counter
-BR ILOOP
-
-BREAK1 HALT
-
-; Declare variables
-ARR9 .FILL x3999
-N1 .FILL #4
-N2 .FILL #9
-N3 .FILL #2
-N4 .FILL #80
-N5 .FILL #11
-N6 .FILL #7
-N7 .FILL #12
-N8 .FILL #15
 
 .END					
