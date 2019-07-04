@@ -1,5 +1,5 @@
 ; CIS 11 Project 1
-; Josh McIntyre, Juan Castellon
+; Josh McIntyre
 ; 05/09/2019
 ; Option A: Bubble Sort
 
